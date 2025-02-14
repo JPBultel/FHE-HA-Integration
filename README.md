@@ -15,21 +15,21 @@ You nedd 2 terminals :
 git clone git@github.com:JPBultel/FHE-HA-Integration.git
 ```
 
-Change working directory branch in *BOTH* terminals to :
+Checkout to uniman branch :
 ```
 cd ~/FHE-HA-Integration/
 git checkout uniman
 ```
 
-### 2. Generate keys, encrypt client input data and a binary decision tree (The clear data is already in HEHAEnc/data):
+### 2. Encryption:
 
-#### 2.1 Build the tool:
+#### 2.1 Build the Encryption tool:
 *(in Terminal 1)* 
 ```
-cd HEHAEnc &&\
+cd ~/FHE-HA-Integration/HEHAEnc &&\
 sudo docker build -t heha-enc .
 ```
-#### 2.2 Run the tool:
+#### 2.2 Run the Encryption tool:
 *(in Terminal 1)*
 ```
 sudo docker run --gpus all -it --name heha-enc heha-enc
@@ -38,12 +38,11 @@ In the docker terminal run:
 ```
 ./encrypt-fintech-setup
 ```
-And close the docker container with `Ctrl-D`.
 
 #### 2.3 Share the keys and the encrypted data:
 *(in Terminal 2)*
 ```
-cd HEHAMain/build/data &&\
+cd ~/FHE-HA-Integration/HEHAMain/build/data &&\
 docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
 docker cp heha-enc:/bdt/build/results/key-public.txt . &&\
 docker cp heha-enc:/bdt/build/results/key-eval-mult.txt . &&\
@@ -63,26 +62,28 @@ docker cp heha-enc:/bdt/build/results/encrypted_tree5.txt . &&\
 docker cp heha-enc:/bdt/build/results/encrypted_tree6.txt . &&\
 cd ../../../HEHADec/build/data &&\
 docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
-docker cp heha-enc:/bdt/build/results/key-public.txt .
+docker cp heha-enc:/bdt/build/results/key-private.txt .
 ```
+
+#### 2.4 Close the running docker container with in Terminal 1 with `Ctrl-D`.
 
 ************************************************************************************
 ### 3. Perform the homomorphic evaluation:
 ************************************************************************************
 
-#### 3.1 Build the tool:
+#### 3.1 Build the Evaluation Tool:
 *(in Terminal 1)*
 ```
 cd ~/FHE-HA-Integration/HEHAMain &&\
 sudo docker build -t heha-main .
 ```
 
-#### 3.2 Run the tool:
+#### 3.2 Run the Evaluation tool:
 *(in Terminal 1)*
 ```
 sudo docker run --gpus all -it --name heha-main heha-main
 ```
-In the running docker terminal execute: !!! Error !!!
+In the running docker terminal execute:
 ```
 ./encrypt-fintech-analytics
 ```
@@ -101,17 +102,20 @@ ctrl-D
 ### 4 Decrypt the result:
 ************************************************************************************
 
-#### 4.1 Build the tool:
+#### 4.1 Build the Decryption Tool:
 *(in Terminal 1)*
 ```
-cd ../HEHADec &&\
-docker build -t heha-dec .
+cd ~/FHE-HA-Integration/HEHADec &&\
+sudo docker build -t heha-dec .
 ```
 
-#### 4.2 Run the tool:
+#### 4.2 Run the Decryption Tool:
 *(in Terminal 1)*
 ```
-docker run --gpus all -it --name heha-dec heha-dec &&\
+sudo docker run --gpus all -it --name heha-dec heha-dec
+```
+In the running docker terminal execute:
+```
 ./encrypt-fintech-getresult
 ```
 
