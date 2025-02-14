@@ -15,9 +15,10 @@ You nedd 2 terminals :
 git clone git@github.com:JPBultel/FHE-HA-Integration.git
 ```
 
-Change working directory in *BOTH* terminals to :
+Change working directory branch in *BOTH* terminals to :
 ```
 cd ~/FHE-HA-Integration/
+git checkout uniman
 ```
 
 ### 2. Generate keys, encrypt client input data and a binary decision tree (The clear data is already in HEHAEnc/data):
@@ -26,14 +27,18 @@ cd ~/FHE-HA-Integration/
 *(in Terminal 1)* 
 ```
 cd HEHAEnc &&\
-docker build -t heha-enc .
+sudo docker build -t heha-enc .
 ```
 #### 2.2 Run the tool:
 *(in Terminal 1)*
 ```
-docker run -it --name heha-enc heha-enc &&\
+sudo docker run --gpus all -it --name heha-enc heha-enc
+```
+In the docker terminal run:
+```
 ./encrypt-fintech-setup
 ```
+And close the docker container with `Ctrl-D`.
 
 #### 2.3 Share the keys and the encrypted data:
 *(in Terminal 2)*
@@ -58,12 +63,8 @@ docker cp heha-enc:/bdt/build/results/encrypted_tree5.txt . &&\
 docker cp heha-enc:/bdt/build/results/encrypted_tree6.txt . &&\
 cd ../../../HEHADec/build/data &&\
 docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
-docker cp heha-enc:/bdt/build/results/key-public.txt . &&\
+docker cp heha-enc:/bdt/build/results/key-public.txt .
 ```
-
-#### 2.4 Exit:
-*(in Terminal 1)*
-ctrl-D
 
 ************************************************************************************
 ### 3. Perform the homomorphic evaluation:
@@ -72,14 +73,17 @@ ctrl-D
 #### 3.1 Build the tool:
 *(in Terminal 1)*
 ```
-cd ../HEHAMain &&\
-docker build -t heha-main .
+cd ~/FHE-HA-Integration/HEHAMain &&\
+sudo docker build -t heha-main .
 ```
 
 #### 3.2 Run the tool:
 *(in Terminal 1)*
 ```
-docker run -it --name heha-main heha-main &&\
+sudo docker run --gpus all -it --name heha-main heha-main
+```
+In the running docker terminal execute: !!! Error !!!
+```
 ./encrypt-fintech-analytics
 ```
 
@@ -107,7 +111,7 @@ docker build -t heha-dec .
 #### 4.2 Run the tool:
 *(in Terminal 1)*
 ```
-docker run -it --name heha-dec heha-dec &&\
+docker run --gpus all -it --name heha-dec heha-dec &&\
 ./encrypt-fintech-getresult
 ```
 
