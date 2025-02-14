@@ -1,5 +1,8 @@
 # Base image
-FROM nvidia/cuda:12.4.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.2.0-devel-ubuntu20.04
+
+# Set terminal to non-interactive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -8,27 +11,40 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y \
     build-essential \
     autoconf \
-    cmake \
     git \
     g++ \
     make \
-    libboost-all-dev
+    libboost-all-dev \
+    wget  # Needed for downloading CMake
+
+# Install CMake 3.27.6
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.6/cmake-3.27.6-linux-x86_64.sh \
+    && chmod +x cmake-3.27.6-linux-x86_64.sh \
+    && ./cmake-3.27.6-linux-x86_64.sh --skip-license --prefix=/usr/local \
+    && rm cmake-3.27.6-linux-x86_64.sh
 
 # Clone the accelerated OpenFHE from UNIMAN
 WORKDIR /usr/src/app
 RUN git clone https://github.com/beehive-lab/openfhe-uniman.git
 WORKDIR openfhe-uniman
 RUN git switch gpu-cuda
-RUN which nvcc
 
 # Build and install OpenFHE
-#WORKDIR /usr/src/app/openfhe-development
-RUN mkdir build && cd build && cmake \
--DWITH_CUDA=ON -DCUDA_PATH=/usr/local/cuda -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc .. \
-&& make \
-&& make install 
+RUN mkdir build &&\
+	cd build
 
-#&& git checkout tags/v1.1.2
+RUN cmake -DCMAKE_BUILD_TYPE=Debug \
+          -DWITH_CUDA=ON \
+          -DCUDA_PATH=/usr/local/cuda \
+          -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+          -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc \
+          -S /usr/src/app/openfhe-uniman \
+          -B /usr/src/app/openfhe-uniman/cmake-build-debug-cuda
+
+RUN cmake --build /usr/src/app/openfhe-uniman/cmake-build-debug-cuda \
+          -- -j 32
+
+RUN cmake --install /usr/src/app/openfhe-uniman/cmake-build-debug-cuda
 
 # Set the library path
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
