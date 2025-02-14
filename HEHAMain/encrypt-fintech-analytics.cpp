@@ -401,6 +401,11 @@ Ciphertext<DCRTPoly> encrypted_result(CryptoContext<DCRTPoly> cc, bdt_ct tree, b
 
 int main()
 {
+
+	// Set GPU configuration
+	lbcrypto::cudaDataUtils::setGpuBlocks(128);
+	lbcrypto::cudaDataUtils::setGpuThreads(512);
+
 	//getting the depth
 	int depth = calculateDepth(DATAFOLDER);
 	//int depth = atoi(argv[1]);
