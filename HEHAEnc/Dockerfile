@@ -53,12 +53,12 @@ ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ENV TERM xterm-256color
 RUN echo 'export PS1="\[\e[36m\](docker@\h) \[\e[1;33m\][\[\e[38;5;130m\]\$(date +%H:%M:%S)\[\e[38;5;167m\] \u:\[\e[38;5;228m\] \w\[\e[1;33m\]]\[\e[m\]\n$ "' > /root/.bashrc
 
+WORKDIR /bdt
 
 # Add all context files and directories before running
 ADD . .
 
 # Get and update the CMakeLists file from the library before compilation
-WORKDIR /bdt
 RUN cp /usr/src/app/openfhe-uniman/CMakeLists.User.txt ./CMakeLists.txt
 RUN echo "find_package(Threads REQUIRED)" >> CMakeLists.txt
 RUN echo "add_executable(encrypt-fintech-setup encrypt-fintech-setup.cpp)" >> CMakeLists.txt
