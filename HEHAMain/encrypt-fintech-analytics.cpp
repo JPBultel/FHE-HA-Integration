@@ -403,8 +403,15 @@ int main()
 {
 
 	// Set GPU configuration
-	lbcrypto::cudaDataUtils::setGpuBlocks(128);
-	lbcrypto::cudaDataUtils::setGpuThreads(512);
+	//lbcrypto::cudaDataUtils::setGpuBlocks(128);
+	//lbcrypto::cudaDataUtils::setGpuThreads(512);
+
+	//#if defined(WITH_CUDA)
+	// Access the singleton instance of cudaDataUtils
+	cudaDataUtils& cudaUtils = cudaDataUtils::getInstance();
+	// Set GPU configuration - Note: suitable for RTX 3050
+	cudaUtils.initialize(64, 512, 14, 32768, 4, 13, 14);
+	//#endif
 
 	//getting the depth
 	int depth = calculateDepth(DATAFOLDER);
@@ -458,6 +465,9 @@ int main()
     
     //////////////////////////////
     //////////////////////////////
+    //#if defined(WITH_CUDA)
+    cudaUtils.destroy();
+    //#endif
       
     //main return value
     return 0;

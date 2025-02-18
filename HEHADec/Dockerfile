@@ -27,7 +27,7 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.6/cmake-3.27.6
 WORKDIR /usr/src/app
 RUN git clone https://github.com/beehive-lab/openfhe-uniman.git
 WORKDIR openfhe-uniman
-RUN git switch gpu-cuda
+RUN git switch opt
 
 # Build and install OpenFHE
 RUN mkdir build &&\
