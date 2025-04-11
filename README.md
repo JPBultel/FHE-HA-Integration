@@ -3,7 +3,7 @@ Instructions [here](ENVIRONMENT.md)
 
 ### 1. Connect to the Encrypt-HAvm:
 ```
-ssh -i ~/.ssh/Encrypt_HAtestVM_keys.pem azureuser@40.68.227.213
+ssh -i ~/.ssh/Encrypt_HAtestVM_keys.pem azureuser@20.73.245.6
 ```
 You nedd 2 terminals :
 - Terminal 1 is for manipulating containers. 
@@ -43,26 +43,26 @@ In the docker terminal run:
 *(in Terminal 2)*
 ```
 cd ~/FHE-HA-Integration/HEHAMain/build/data &&\
-docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
-docker cp heha-enc:/bdt/build/results/key-public.txt . &&\
-docker cp heha-enc:/bdt/build/results/key-eval-mult.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data0.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data1.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data2.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data3.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data4.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data5.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_data6.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree0.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree1.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree2.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree3.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree4.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree5.txt . &&\
-docker cp heha-enc:/bdt/build/results/encrypted_tree6.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/key-public.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/key-eval-mult.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data0.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data1.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data2.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data3.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data4.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data5.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_data6.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree0.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree1.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree2.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree3.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree4.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree5.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/encrypted_tree6.txt . &&\
 cd ../../../HEHADec/build/data &&\
-docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
-docker cp heha-enc:/bdt/build/results/key-private.txt .
+sudo docker cp heha-enc:/bdt/build/results/cryptocontext.txt . &&\
+sudo docker cp heha-enc:/bdt/build/results/key-private.txt .
 ```
 
 #### 2.4 Close the running docker container with in Terminal 1 with `Ctrl-D`.
@@ -91,7 +91,7 @@ In the running docker terminal execute:
 #### 3.3 Share the encrypted result:
 *(in Terminal 2)*
 ```
-docker cp heha-main:/bdt/build/results/output_ciphertext.txt .
+sudo docker cp heha-main:/bdt/build/results/output_ciphertext.txt .
 ```
 #### 3.4 Exit:
 *(in Terminal 1)*
