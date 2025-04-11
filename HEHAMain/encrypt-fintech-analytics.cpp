@@ -406,12 +406,13 @@ int main()
 	//lbcrypto::cudaDataUtils::setGpuBlocks(128);
 	//lbcrypto::cudaDataUtils::setGpuThreads(512);
 
-	//#if defined(WITH_CUDA)
+	#if defined(WITH_CUDA)
 	// Access the singleton instance of cudaDataUtils
 	cudaDataUtils& cudaUtils = cudaDataUtils::getInstance();
-	// Set GPU configuration - Note: suitable for RTX 3050
-	cudaUtils.initialize(64, 512, 14, 32768, 4, 13, 14);
-	//#endif
+	// Set GPU configuration - Note: suitable for T4 in AzureVM
+	// ringDim = 32768, sizeP = 3, sizeQ = 9, PHatModq_size_y = 10
+	cudaUtils.initialize(64, 512, 10, 32768, 3, 9, 10);
+	#endif
 
 	//getting the depth
 	int depth = calculateDepth(DATAFOLDER);
@@ -465,9 +466,9 @@ int main()
     
     //////////////////////////////
     //////////////////////////////
-    //#if defined(WITH_CUDA)
+    #if defined(WITH_CUDA)
     cudaUtils.destroy();
-    //#endif
+    #endif
       
     //main return value
     return 0;
