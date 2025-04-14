@@ -34,6 +34,7 @@ RUN mkdir build &&\
 	cd build
 
 RUN cmake -DCMAKE_BUILD_TYPE=Debug \
+          -DWITH_OPENMP=OFF \
           -DWITH_CUDA=ON \
           -DCUDA_PATH=/usr/local/cuda \
           -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
@@ -42,7 +43,7 @@ RUN cmake -DCMAKE_BUILD_TYPE=Debug \
           -B /usr/src/app/openfhe-uniman/cmake-build-debug-cuda
 
 RUN cmake --build /usr/src/app/openfhe-uniman/cmake-build-debug-cuda \
-          -- -j 32
+          -- -j $(nproc)
 
 RUN cmake --install /usr/src/app/openfhe-uniman/cmake-build-debug-cuda
 
