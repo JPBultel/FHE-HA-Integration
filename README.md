@@ -3,7 +3,7 @@ Instructions [here](ENVIRONMENT.md)
 
 ### 1. Connect to the Encrypt-HAvm:
 ```
-ssh -i ~/.ssh/Encrypt_HAtestVM_keys.pem azureuser@20.73.245.6
+ssh -i ~/.ssh/Encrypt_HAtestVM_keys.pem azureuser@20.73.185.100
 ```
 You nedd 2 terminals :
 - Terminal 1 is for manipulating containers. 
@@ -32,7 +32,7 @@ sudo docker build -t heha-enc .
 #### 2.2 Run the Encryption tool:
 *(in Terminal 1)*
 ```
-sudo docker run --gpus all -it --name heha-enc heha-enc
+sudo docker run -it --name heha-enc heha-enc
 ```
 In the docker terminal run:
 ```
@@ -91,7 +91,7 @@ In the running docker terminal execute:
 #### 3.3 Share the encrypted result:
 *(in Terminal 2)*
 ```
-sudo docker cp heha-main:/bdt/build/results/output_ciphertext.txt .
+sudo docker cp heha-main:/bdt/build/results/output_ciphertext.txt ~/FHE-HA-Integration/HEHADec/build/data/output_ciphertext.txt
 ```
 #### 3.4 Exit:
 *(in Terminal 1)*
@@ -112,7 +112,7 @@ sudo docker build -t heha-dec .
 #### 4.2 Run the Decryption Tool:
 *(in Terminal 1)*
 ```
-sudo docker run --gpus all -it --name heha-dec heha-dec
+sudo docker run -it --name heha-dec heha-dec
 ```
 In the running docker terminal execute:
 ```
