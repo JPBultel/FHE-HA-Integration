@@ -13,11 +13,19 @@
 #include "key/key-ser.h"
 #include "scheme/bgvrns/bgvrns-ser.h"
 
+#include <utils/timers.h>
+
 using namespace lbcrypto;
 namespace fs = std::filesystem;
 
 const std::string DATAFOLDER = "data";
 const std::string RESULTSFOLDER = "results";
+
+int numOfMultiplications = 0;
+// End-to-end execution time timer
+TimeVar appTimer;
+// Timer for Homomorphic multiplications execution time
+TimeVar homTimer;
 
 //binary decision trees
 typedef struct bdt
@@ -299,10 +307,13 @@ std::vector<std::vector<Ciphertext<DCRTPoly>>> encrypted_result_before_mult(Cryp
 	for(int i=0; i<number_of_leaves; i++)
 	{
 		result[i] = std::vector<Ciphertext<DCRTPoly>>(depth);
+		TIC(homTimer);
 		for(int j=0; j<depth; j++)
 		{
 		   result[i][j] = cc->EvalSub(cc->EvalMult(deltas[i][j], deltas[i][j]), encrypted_abstract_reversePaths(cc, depth, pk)[i][j]);
+		   numOfMultiplications++;
 		}
+		accumulateTimer(operationsTimer, TOC_MS(homTimer));
 	}
 	return result;
 } 
@@ -311,10 +322,13 @@ std::vector<std::vector<Ciphertext<DCRTPoly>>> encrypted_result_before_mult(Cryp
 Ciphertext<DCRTPoly> evalGlobalProd(CryptoContext<DCRTPoly> cc, std::vector<Ciphertext<DCRTPoly>> ciphertexts)
 {
 	Ciphertext<DCRTPoly> result = ciphertexts[0];
+	TIC(homTimer);
 	for(unsigned int i=1; i<ciphertexts.size(); i++)
 	{
 	   result = cc->EvalMult(result, ciphertexts[i]);
+	   numOfMultiplications++;
 	}
+	accumulateTimer(operationsTimer, TOC_MS(homTimer));
 	return result;
 }
 
@@ -355,10 +369,13 @@ Ciphertext<DCRTPoly> encrypted_result(CryptoContext<DCRTPoly> cc, bdt_ct tree, b
 	 for(int i=0; i<pow(2, depth); i++)
 	 {
 		 bin_result_at_some_slot.push_back({});
+		 TIC(homTimer);
 		 for(int j=0; j<depth; j++)
 		 {
 			 bin_result_at_some_slot[i].push_back(cc->EvalMult(eap[i][j], eram[i]));
+			 numOfMultiplications++;
 		 }
+		 accumulateTimer(operationsTimer, TOC_MS(homTimer));
 	 }
 	
 	
@@ -376,17 +393,23 @@ Ciphertext<DCRTPoly> encrypted_result(CryptoContext<DCRTPoly> cc, bdt_ct tree, b
 	}
 	
 	//(here the -1 values are turned into 1 values in order to have each value at 0 or 1)
+	TIC(homTimer);
 	for(int j=0; j<depth; j++)
 	{
 		bin_result[j] = cc->EvalMult(bin_result[j], bin_result[j]);
+		numOfMultiplications++;
 	}
+	accumulateTimer(operationsTimer, TOC_MS(homTimer));
 
 	Ciphertext<DCRTPoly> result = cc->Encrypt(pk, cc->MakePackedPlaintext({0}));
 	std::vector<Ciphertext<DCRTPoly>> acc;
 	acc = std::vector<Ciphertext<DCRTPoly>>();
 	for(int j=0; j<depth; j++)
 	{		
+		TIC(homTimer);
 		acc.push_back(cc->EvalMult(bin_result[j], powersOf2(cc, depth, pk)[j]));
+		numOfMultiplications++;
+		accumulateTimer(operationsTimer, TOC_MS(homTimer));
 		result = cc->EvalAdd(acc[j], result);
 	}
 	
@@ -402,9 +425,8 @@ Ciphertext<DCRTPoly> encrypted_result(CryptoContext<DCRTPoly> cc, bdt_ct tree, b
 int main()
 {
 
-	// Set GPU configuration
-	//lbcrypto::cudaDataUtils::setGpuBlocks(128);
-	//lbcrypto::cudaDataUtils::setGpuThreads(512);
+	// Tic end-to-end timer
+	TIC(appTimer);
 
 	#if defined(WITH_CUDA)
 	// Access the singleton instance of cudaDataUtils
@@ -464,8 +486,16 @@ int main()
     }
     std::cout << "The output ciphertext has been serialized." << std::endl;
     
-    //////////////////////////////
-    //////////////////////////////
+    
+    // Accumulate end-to-end execution time timer
+    accumulateTimer(applicationTimer, TOC_MS(appTimer));
+
+    // Num of homomorphic multiplications
+    setNumOfOperations(numOfMultiplications);
+
+    // Print all timers
+    printTimers();
+
     #if defined(WITH_CUDA)
     cudaUtils.destroy();
     #endif
